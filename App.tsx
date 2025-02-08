@@ -1,118 +1,103 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  SafeAreaView,
+  StatusBar,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
+import Geolocation, {
+  GeolocationResponse,
+  GeolocationError,
+} from '@react-native-community/geolocation';
+import MapView, {Marker} from 'react-native-maps';
+import axios from 'axios';
+import io from 'socket.io-client';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const BACKEND_API_URL = 'https://managements-api.onrender.com/api/location';
+const SOCKET_URL = 'wss://managements-api.onrender.com/api';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+type Location = {
+  latitude: number;
+  longitude: number;
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const socket = io(SOCKET_URL, {
+  transports: ['websocket'],
+});
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [location, setLocation] = useState<Location>({
+    latitude: 0,
+    longitude: 0,
+  });
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const driverId = '12345';
+
+  const requestLocationPermission = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      );
+      if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('Location permission denied');
+        return;
+      }
+    } else if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization(); // Request permission for iOS
+    }
+
+    const watchId = Geolocation.watchPosition(
+      async (position: GeolocationResponse) => {
+        const {latitude, longitude} = position.coords;
+        setLocation({latitude, longitude});
+
+        await axios.post(BACKEND_API_URL, {
+          driverId,
+          latitude,
+          longitude,
+        });
+
+        socket.emit('send-location', {driverId, latitude, longitude});
+      },
+      (error: GeolocationError) => console.error(error),
+      {enableHighAccuracy: true, distanceFilter: 10},
+    );
+
+    return () => {
+      Geolocation.clearWatch(watchId);
+    };
   };
 
+  useEffect(() => {
+    requestLocationPermission();
+
+    socket.on(`location-update-${driverId}`, data => {
+      console.log('Live location update received:', data);
+      setLocation({latitude: data.latitude, longitude: data.longitude});
+    });
+
+    return () => {
+      socket.off(`location-update-${driverId}`);
+      socket.disconnect();
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
+    <SafeAreaView style={{flex: 1}}>
+      <StatusBar barStyle="light-content" />
+      <MapView
+        style={{flex: 1}}
+        initialRegion={{
+          latitude: location.latitude || 0,
+          longitude: location.longitude || 0,
+          latitudeDelta: 0.05,
+          longitudeDelta: 0.05,
+        }}>
+        <Marker coordinate={location} title="Prosper's Location" />
+      </MapView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

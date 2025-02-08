@@ -76,7 +76,19 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
-
+    
+allprojects {
+    repositories {
+        maven {
+            url "https://maven.transistorsoft.com"
+        }
+        maven {
+            url "https://transistorsoft.jfrog.io/artifactory/background-geolocation-npm"
+        }
+        google()
+        mavenCentral()
+    }
+}
     namespace "com.livetrackingapp"
     defaultConfig {
         applicationId "com.livetrackingapp"

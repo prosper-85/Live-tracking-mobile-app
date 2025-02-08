@@ -25,6 +25,10 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
+	<key>NSLocationWhenInUseUsageDescription</key>
+<string>We need your location to show your real-time position on the map.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app requires access to your location at all times.</string>
 	<dict>
 	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
