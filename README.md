@@ -34,7 +34,7 @@ Ensure you have the following installed:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/LiveTrackingApp.git
+   git clone https://github.com/prosper-85/Live-tracking-mobile-app.git
    cd LiveTrackingApp
    ```
 2. Install dependencies:
