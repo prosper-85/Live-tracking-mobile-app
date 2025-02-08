@@ -1,97 +1,84 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# LiveTrackingApp
 
-# Getting Started
+## Overview
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+LiveTrackingApp is a React Native application that tracks a user's live location, updates a backend server, and receives real-time location updates via WebSockets. The app integrates **react-native-maps**, **@react-native-community/geolocation**, and **socket.io-client** to provide seamless location tracking.
 
-## Step 1: Start Metro
+## Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- Request location permission on both Android and iOS
+- Track and update live location
+- Send location data to a backend server
+- Receive real-time location updates via WebSockets
+- Display the location on a map using **react-native-maps**
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Tech Stack
 
-```sh
-# Using npm
-npm start
+- **React Native**
+- **react-native-maps**
+- **@react-native-community/geolocation**
+- **axios** (for HTTP requests)
+- **socket.io-client** (for real-time updates)
 
-# OR using Yarn
-yarn start
+## Installation
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- Node.js
+- React Native CLI or Expo CLI (if using Expo)
+- Android Studio / Xcode (for emulator/simulator)
+
+### Steps
+
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-repo/LiveTrackingApp.git
+   cd LiveTrackingApp
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Link dependencies (if using React Native CLI):
+   ```sh
+   npx react-native link
+   ```
+4. Run the app:
+   - For Android:
+     ```sh
+     npx react-native run-android
+     ```
+   - For iOS:
+     ```sh
+     cd ios
+     pod install
+     cd ..
+     npx react-native run-ios
+     ```
+
+## Configuration
+
+### Backend API
+
+```ts
+const BACKEND_API_URL = 'https://managements-api.onrender.com/api/location';
+const SOCKET_URL = 'wss://managements-api.onrender.com/api';
 ```
 
-## Step 2: Build and run your app
+## Usage
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+1. Grant location permission when prompted.
+2. The app will start tracking the user's location and send updates to the backend.
+3. Location updates are received via WebSockets and displayed on the map.
 
-### Android
+## Troubleshooting
 
-```sh
-# Using npm
-npm run android
+- **Location Permission Denied:** Ensure location permissions are enabled in device settings.
+- **Map Not Displaying:** Verify Google Maps API key (for Android) or ensure the iOS simulator has location enabled.
+- **Backend Not Receiving Data:** Check if the backend API is running and accessible.
 
-# OR using Yarn
-yarn android
-```
+## Author
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Prosper - https://github.com/prosper-85
